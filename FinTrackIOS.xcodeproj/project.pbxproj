@@ -25,11 +25,11 @@
 
 /* Begin PBXFileReference section */
 		2E02E09A2FB0A87D003FAB21 /* FinTrackIOS.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = FinTrackIOS.xctestplan; sourceTree = "<group>"; };
-		FT00000000000000000000D1 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
-		FT00000000000000000000D2 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		2E78A0C62FAF826B002199A3 /* FinTrackIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FinTrackIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2E78A0D32FAF826D002199A3 /* FinTrackIOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FinTrackIOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2E78A0DD2FAF826D002199A3 /* FinTrackIOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FinTrackIOSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FT00000000000000000000D1 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		FT00000000000000000000D2 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -75,15 +75,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		FT00000000000000000000CF /* Configs */ = {
-			isa = PBXGroup;
-			children = (
-				FT00000000000000000000D1 /* Debug.xcconfig */,
-				FT00000000000000000000D2 /* Release.xcconfig */,
-			);
-			path = Configs;
-			sourceTree = "<group>";
-		};
 		2E78A0BD2FAF826B002199A3 = {
 			isa = PBXGroup;
 			children = (
@@ -104,6 +95,15 @@
 				2E78A0DD2FAF826D002199A3 /* FinTrackIOSUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		FT00000000000000000000CF /* Configs */ = {
+			isa = PBXGroup;
+			children = (
+				FT00000000000000000000D1 /* Debug.xcconfig */,
+				FT00000000000000000000D2 /* Release.xcconfig */,
+			);
+			path = Configs;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

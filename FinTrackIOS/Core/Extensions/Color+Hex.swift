@@ -1,3 +1,10 @@
-// FinTrack — Core/Extensions/Color+Hex.swift
-// Color(hex: 0x5B8A72) initializer used by FTColor tokens.
 import SwiftUI
+
+extension Color {
+    init(hex: UInt32, opacity: Double = 1) {
+        let r = Double((hex >> 16) & 0xFF) / 255
+        let g = Double((hex >> 8)  & 0xFF) / 255
+        let b = Double( hex        & 0xFF) / 255
+        self.init(.sRGB, red: r, green: g, blue: b, opacity: opacity)
+    }
+}
