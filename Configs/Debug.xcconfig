@@ -1,0 +1,5 @@
+// FinTrack — Debug.xcconfig
+// Local Go/Gin backend. Switch to Release config for deployed HTTPS endpoint.
+// Note: xcconfig treats // as a comment, so $(SLASH) is used for URL schemes.
+SLASH = /
+API_BASE_URL = http:$(SLASH)$(SLASH)localhost:8080

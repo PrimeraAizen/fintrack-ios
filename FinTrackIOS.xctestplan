@@ -1,0 +1,38 @@
+{
+  "configurations" : [
+    {
+      "id" : "D22A712A-85F7-4618-AEE8-7873258E78FE",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:FinTrackIOS.xcodeproj",
+      "identifier" : "2E78A0C52FAF826B002199A3",
+      "name" : "FinTrackIOS"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:FinTrackIOS.xcodeproj",
+        "identifier" : "2E78A0D22FAF826D002199A3",
+        "name" : "FinTrackIOSTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:FinTrackIOS.xcodeproj",
+        "identifier" : "2E78A0DC2FAF826D002199A3",
+        "name" : "FinTrackIOSUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

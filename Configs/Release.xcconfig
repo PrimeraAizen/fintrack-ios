@@ -1,0 +1,5 @@
+// FinTrack — Release.xcconfig
+// Replace API_BASE_URL with the deployed HTTPS endpoint before App Store submission.
+// Note: xcconfig treats // as a comment, so $(SLASH) is used for URL schemes.
+SLASH = /
+API_BASE_URL = https:$(SLASH)$(SLASH)api.fintrack.example.com
