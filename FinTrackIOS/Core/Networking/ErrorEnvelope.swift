@@ -1,3 +1,8 @@
-// FinTrack — Core/Networking/ErrorEnvelope.swift
-// Decodes: { "error": true, "code": "...", "message": "...", "details": {...} }
 import Foundation
+
+struct ErrorEnvelope: Decodable {
+    let error: Bool
+    let code: String
+    let message: String
+    let details: [String: String]?
+}

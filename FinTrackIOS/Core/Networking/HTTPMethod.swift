@@ -1,3 +1,9 @@
-// FinTrack — Core/Networking/HTTPMethod.swift
-// HTTP method enum (GET, POST, PATCH, DELETE). Implemented in Task 7.
 import Foundation
+
+enum HTTPMethod: String, Sendable {
+    case get    = "GET"
+    case post   = "POST"
+    case put    = "PUT"
+    case patch  = "PATCH"
+    case delete = "DELETE"
+}

@@ -1,3 +1,6 @@
-// FinTrack — Core/Networking/SuccessEnvelope.swift
-// Decodes: { "error": false, "data": { ... } }
 import Foundation
+
+struct SuccessEnvelope<T: Decodable>: Decodable {
+    let error: Bool
+    let data: T
+}
