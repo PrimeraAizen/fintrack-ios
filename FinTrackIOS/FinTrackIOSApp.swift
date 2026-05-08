@@ -1,17 +1,14 @@
-//
-//  FinTrackIOSApp.swift
-//  FinTrackIOS
-//
-//  Created by Дияс Нуруллаев on 09.05.2026.
-//
-
 import SwiftUI
 
 @main
 struct FinTrackIOSApp: App {
+    @State private var env = AppEnvironment()
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
+                .environment(env)
+                .task { await env.authService.bootstrap() }
         }
     }
 }

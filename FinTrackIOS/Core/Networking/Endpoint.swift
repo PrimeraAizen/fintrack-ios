@@ -145,10 +145,10 @@ extension Endpoint.Transactions {
         Endpoint(method: .get, path: "/transactions/\(id)")
     }
 
-    static func create(accountID: UUID, categoryID: UUID, amount: Decimal, currency: String, note: String?, date: String, type: String) -> Endpoint {
+    static func create(accountID: UUID, categoryID: UUID, amount: Decimal, currency: String, note: String?, date: Date, type: String) -> Endpoint {
         struct Body: Encodable {
             let accountID: UUID; let categoryID: UUID; let amount: Decimal
-            let currency: String; let note: String?; let transactionDate: String; let type: String
+            let currency: String; let note: String?; let transactionDate: Date; let type: String
         }
         return Endpoint(method: .post, path: "/transactions",
                         body: Body(accountID: accountID, categoryID: categoryID, amount: amount,

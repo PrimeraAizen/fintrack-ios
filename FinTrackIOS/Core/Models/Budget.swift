@@ -13,15 +13,26 @@ enum BudgetPeriod: String, Codable, CaseIterable, Sendable {
 
 struct Budget: Codable, Identifiable, Hashable, Sendable {
     let id: UUID
-    let userID: UUID
     let categoryID: UUID
-    let spendingLimit: Decimal
-    let spent: Decimal
-    let remaining: Decimal
+    @StringOrDecimal var spendingLimit: Decimal
+    @StringOrDecimal var spent: Decimal
+    @StringOrDecimal var remaining: Decimal
     let period: BudgetPeriod
     let periodStart: Date
     let exceeded: Bool
     let createdAt: Date
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case categoryID = "categoryId"
+        case spendingLimit
+        case spent
+        case remaining
+        case period
+        case periodStart
+        case exceeded
+        case createdAt
+    }
 }
 
 // MARK: - Preview
@@ -29,7 +40,6 @@ struct Budget: Codable, Identifiable, Hashable, Sendable {
 extension Budget {
     static let preview = Budget(
         id: UUID(uuidString: "00000000-0000-0000-0000-000000000040")!,
-        userID: User.preview.id,
         categoryID: Category.previewExpense.id,
         spendingLimit: 50_000,
         spent: 32_000,

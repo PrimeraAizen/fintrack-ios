@@ -9,6 +9,28 @@ enum TransactionType: String, Codable, CaseIterable, Sendable {
         case .expense: "Expense"
         }
     }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue = try container.decode(String.self)
+        let normalized = rawValue
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
+            .replacingOccurrences(of: "-", with: "_")
+            .replacingOccurrences(of: " ", with: "_")
+
+        switch normalized {
+        case Self.income.rawValue, "credit", "inflow":
+            self = .income
+        case Self.expense.rawValue, "debit", "outflow":
+            self = .expense
+        default:
+            throw DecodingError.dataCorruptedError(
+                in: container,
+                debugDescription: "Cannot initialize TransactionType from invalid String value: \(rawValue)"
+            )
+        }
+    }
 }
 
 struct Transaction: Codable, Identifiable, Hashable, Sendable {
@@ -16,18 +38,39 @@ struct Transaction: Codable, Identifiable, Hashable, Sendable {
     let accountID: UUID
     let categoryID: UUID
     let type: TransactionType
-    let amount: Decimal
+    @StringOrDecimal var amount: Decimal
     let currency: String
-    let convertedAmount: Decimal
+    @StringOrDecimal var convertedAmount: Decimal
     let note: String?
     let transactionDate: Date
     let createdAt: Date
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case accountID = "accountId"
+        case categoryID = "categoryId"
+        case type
+        case amount
+        case currency
+        case convertedAmount
+        case note
+        case transactionDate
+        case createdAt
+    }
 }
 
 /// Returned inside `data` when creating a transaction.
 struct CreateTransactionResponse: Decodable, Sendable {
-    let transaction: Transaction
     let budgetExceeded: Bool?
+
+    private enum CodingKeys: String, CodingKey {
+        case budgetExceeded
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        budgetExceeded = try container.decodeIfPresent(Bool.self, forKey: .budgetExceeded)
+    }
 }
 
 // MARK: - Preview

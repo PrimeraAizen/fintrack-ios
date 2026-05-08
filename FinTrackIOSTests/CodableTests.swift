@@ -33,6 +33,18 @@ struct CodableTests {
         #expect(decoded == Transaction.preview)
     }
 
+    @Test func transactionTypeCaseInsensitiveDecodes() throws {
+        let json = #"{"id":"00000000-0000-0000-0000-000000000030","account_id":"00000000-0000-0000-0000-000000000010","category_id":"00000000-0000-0000-0000-000000000020","type":"EXPENSE","amount":4200,"currency":"KZT","converted_amount":4200,"note":"Magnum","transaction_date":"2026-05-01T12:00:00.000Z","created_at":"2026-05-01T12:00:00.000Z"}"#
+        let transaction = try decoder.decode(Transaction.self, from: Data(json.utf8))
+        #expect(transaction.type == .expense)
+    }
+
+    @Test func createTransactionResponseIgnoresTransactionPayload() throws {
+        let json = #"{"error":false,"data":{"transaction":{"type":""},"budget_exceeded":true}}"#
+        let envelope = try decoder.decode(SuccessEnvelope<CreateTransactionResponse>.self, from: Data(json.utf8))
+        #expect(envelope.data.budgetExceeded == true)
+    }
+
     @Test func budgetRoundTrip() throws {
         let decoded = try roundTrip(Budget.preview)
         #expect(decoded == Budget.preview)

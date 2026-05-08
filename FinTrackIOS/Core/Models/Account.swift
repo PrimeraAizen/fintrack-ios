@@ -27,11 +27,10 @@ enum AccountType: String, Codable, CaseIterable, Sendable {
 
 struct Account: Codable, Identifiable, Hashable, Sendable {
     let id: UUID
-    let userID: UUID
     let name: String
     let type: AccountType
     let currency: String
-    let balance: Decimal
+    @StringOrDecimal var balance: Decimal
     let createdAt: Date
 }
 
@@ -40,7 +39,6 @@ struct Account: Codable, Identifiable, Hashable, Sendable {
 extension Account {
     static let preview = Account(
         id: UUID(uuidString: "00000000-0000-0000-0000-000000000010")!,
-        userID: User.preview.id,
         name: "Main Card",
         type: .card,
         currency: "KZT",

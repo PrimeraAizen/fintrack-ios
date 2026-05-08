@@ -1,11 +1,20 @@
 import Foundation
+import OSLog
 
 // MARK: - Protocol
 
 protocol APIClientProtocol {
-    func send<R: Decodable>(_ endpoint: Endpoint, as type: R.Type) async throws -> R
-    func sendPaginated<R: Decodable>(_ endpoint: Endpoint, as type: R.Type) async throws -> Paginated<R>
+    func send<R: Decodable & Sendable>(_ endpoint: Endpoint, as type: R.Type) async throws -> R
+    func sendPaginated<R: Decodable & Sendable>(_ endpoint: Endpoint, as type: R.Type) async throws -> Paginated<R>
     func sendVoid(_ endpoint: Endpoint) async throws
+    func sendData(_ endpoint: Endpoint) async throws -> Data
+    func uploadCSV(at fileURL: URL) async throws -> CSVImportResult
+}
+
+struct CSVImportResult: Decodable, Sendable {
+    let imported: Int
+    let failed: Int
+    let errors: [String]?
 }
 
 // MARK: - APIClient
@@ -14,8 +23,8 @@ final class APIClient: APIClientProtocol {
 
     // Injected by AppCoordinator after AuthService is ready (Task 11).
     var getAccessToken: (() -> String?)?
-    var performRefresh: (() async throws -> Void)?
-    var onSessionExpired: (() -> Void)?
+    var performRefresh: (@Sendable () async throws -> Void)?
+    var onSessionExpired: (() async -> Void)?
 
     private let session: URLSession
     private let baseURL: URL
@@ -45,18 +54,34 @@ final class APIClient: APIClientProtocol {
 
 extension APIClient {
 
-    func send<R: Decodable>(_ endpoint: Endpoint, as type: R.Type) async throws -> R {
+    func send<R: Decodable & Sendable>(_ endpoint: Endpoint, as type: R.Type) async throws -> R {
         let data = try await execute(endpoint)
         return try decode(SuccessEnvelope<R>.self, from: data).data
     }
 
-    func sendPaginated<R: Decodable>(_ endpoint: Endpoint, as type: R.Type) async throws -> Paginated<R> {
+    func sendPaginated<R: Decodable & Sendable>(_ endpoint: Endpoint, as type: R.Type) async throws -> Paginated<R> {
         let data = try await execute(endpoint)
         return try decode(SuccessEnvelope<Paginated<R>>.self, from: data).data
     }
 
     func sendVoid(_ endpoint: Endpoint) async throws {
         _ = try await execute(endpoint)
+    }
+
+    func sendData(_ endpoint: Endpoint) async throws -> Data {
+        return try await execute(endpoint)
+    }
+
+    func uploadCSV(at fileURL: URL) async throws -> CSVImportResult {
+        var request = try buildRequest(Endpoint.Transactions.import)
+        let boundary = "FT-\(UUID().uuidString)"
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try buildMultipart(fileURL: fileURL, boundary: boundary)
+
+        let (data, response) = try await perform(request)
+        guard let http = response as? HTTPURLResponse else { throw APIError.network }
+        try validate(data, response: http)
+        return try decode(SuccessEnvelope<CSVImportResult>.self, from: data).data
     }
 }
 
@@ -75,7 +100,7 @@ private extension APIClient {
                 guard let refresh = performRefresh else { throw APIError.unauthorized }
                 try await interceptor.refresh(using: refresh)
             } catch {
-                onSessionExpired?()
+                await onSessionExpired?()
                 throw APIError.unauthorized
             }
             return try await execute(endpoint, isRetry: true)
@@ -87,7 +112,8 @@ private extension APIClient {
 
     func buildRequest(_ endpoint: Endpoint) throws -> URLRequest {
         var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
-        components?.path = (components?.path ?? "") + "/api/v1" + endpoint.path
+        let basePath = components?.path ?? ""
+        components?.path = basePath + "/api/v1" + endpoint.path
         components?.queryItems = endpoint.query
 
         guard let url = components?.url else {
@@ -146,6 +172,16 @@ private extension APIClient {
                 message: envelope?.message ?? HTTPURLResponse.localizedString(forStatusCode: response.statusCode)
             )
         }
+    }
+
+    func buildMultipart(fileURL: URL, boundary: String) throws -> Data {
+        let fileData = try Data(contentsOf: fileURL)
+        let filename = fileURL.lastPathComponent
+        var body = Data()
+        body.append(contentsOf: "--\(boundary)\r\nContent-Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\r\nContent-Type: text/csv\r\n\r\n".utf8)
+        body.append(fileData)
+        body.append(contentsOf: "\r\n--\(boundary)--\r\n".utf8)
+        return body
     }
 
     func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {

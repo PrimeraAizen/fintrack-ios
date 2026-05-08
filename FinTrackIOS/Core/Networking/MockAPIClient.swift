@@ -24,7 +24,7 @@ final class MockAPIClient: APIClientProtocol {
         stubs[path] = response
     }
 
-    func stubPaginated<R>(path: String, items: [R], pagination: PaginationInfo = .init(page: 1, perPage: 20, total: 1, totalPages: 1)) {
+    func stubPaginated<R: Decodable>(path: String, items: [R], pagination: PaginationInfo = .init(page: 1, perPage: 20, total: 1, totalPages: 1)) {
         paginatedStubs[path] = Paginated(items: items, pagination: pagination)
     }
 
@@ -37,7 +37,7 @@ final class MockAPIClient: APIClientProtocol {
 
     // MARK: - APIClientProtocol
 
-    func send<R: Decodable>(_ endpoint: Endpoint, as type: R.Type) async throws -> R {
+    func send<R: Decodable & Sendable>(_ endpoint: Endpoint, as type: R.Type) async throws -> R {
         capturedEndpoints.append(endpoint)
         if let error = stubbedError { throw error }
         guard let response = stubs[endpoint.path] as? R else {
@@ -46,7 +46,7 @@ final class MockAPIClient: APIClientProtocol {
         return response
     }
 
-    func sendPaginated<R: Decodable>(_ endpoint: Endpoint, as type: R.Type) async throws -> Paginated<R> {
+    func sendPaginated<R: Decodable & Sendable>(_ endpoint: Endpoint, as type: R.Type) async throws -> Paginated<R> {
         capturedEndpoints.append(endpoint)
         if let error = stubbedError { throw error }
         guard let response = paginatedStubs[endpoint.path] as? Paginated<R> else {
@@ -58,5 +58,16 @@ final class MockAPIClient: APIClientProtocol {
     func sendVoid(_ endpoint: Endpoint) async throws {
         capturedEndpoints.append(endpoint)
         if let error = stubbedError { throw error }
+    }
+
+    func sendData(_ endpoint: Endpoint) async throws -> Data {
+        capturedEndpoints.append(endpoint)
+        if let error = stubbedError { throw error }
+        return Data()
+    }
+
+    func uploadCSV(at fileURL: URL) async throws -> CSVImportResult {
+        if let error = stubbedError { throw error }
+        return CSVImportResult(imported: 0, failed: 0, errors: nil)
     }
 }

@@ -90,9 +90,9 @@ extension FTListRow where Leading == EmptyView, Trailing == EmptyView {
                 Text("–$42.00").font(FTTypography.numericMD).foregroundStyle(FTColor.textPrimary)
             }
 
-            FTListRow(title: "Salary", showDivider: false) {
+            FTListRow(title: "Salary", showDivider: false, trailing: {
                 Text("+$3,000").font(FTTypography.numericMD).foregroundStyle(FTColor.income)
-            }
+            })
         }
     }
     .padding()
